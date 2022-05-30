@@ -22,7 +22,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 from functools import wraps
 import os
 import json
@@ -170,7 +169,10 @@ class OpenIDConnect(object):
 
         # register callback route and cookie-setting decorator
         if not app.config['OIDC_RESOURCE_SERVER_ONLY']:
-            app.route(app.config['OIDC_CALLBACK_ROUTE'])(self._oidc_callback)
+            def _oidc_callback():
+                return self._oidc_callback()
+
+            app.route(app.config['OIDC_CALLBACK_ROUTE'])(_oidc_callback)
             app.before_request(self._before_request)
             app.after_request(self._after_request)
 
